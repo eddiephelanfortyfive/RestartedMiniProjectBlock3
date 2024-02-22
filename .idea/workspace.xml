@@ -5,11 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="543b33ea-610b-43b3-a947-5877c9380590" name="Changes" comment="deletion of templates">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Website/Templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/Website/Templates/base.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Website/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Website/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Website/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/Website/auth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Website/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Website/models.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
