@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, request, render_template
 
 auth = Blueprint('auth', __name__)
 
@@ -32,5 +32,5 @@ def register():
         elif len(password1) < 7:
             pass
         else:
-                #add user to database
-    return render_template("sign_up.html")
+                #add to database
+            return render_template("sign_up.html")
