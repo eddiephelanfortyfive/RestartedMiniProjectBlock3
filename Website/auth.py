@@ -35,8 +35,8 @@ def register():
         elif len(password1) < 7:
             flash('Password must be at least 7 characters', category='error')
 
-        # else:
-        #     flash('Account created', category='success')
+        else:
+            flash('Account created', category='success')
 
             #add to database
     return render_template("sign_up.html")
