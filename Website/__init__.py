@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import path
+from flask import current_app
+
 
 db = SQLAlchemy()
 DB_NAME = "ClubHub.db"
@@ -25,11 +27,12 @@ def create_app():
     app.register_blueprint(auth,url_prefix='/')
 
     from .models import User, Note
-    # create_database(app)
+    create_database(app)
 
     return app
 
 def create_database(app):
-    if not path.exists('Website/' + DB_NAME):
-        db.create_all(app=app)
-        print('Database created successfully!')
+    with app.app_context():
+        if not path.exists('Website/' + DB_NAME):
+            db.create_all()
+            print('Database created successfully!')
