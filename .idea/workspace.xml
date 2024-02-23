@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="543b33ea-610b-43b3-a947-5877c9380590" name="Changes" comment="fixed app create error">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+    <list default="true" id="543b33ea-610b-43b3-a947-5877c9380590" name="Changes" comment="fixed app again, first instance of database">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Website/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/Website/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/Website/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Website/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Website/models.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -164,7 +165,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708618539531</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="fixed app again, first instance of database">
+      <option name="closed" value="true" />
+      <created>1708695483375</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1708695483375</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -176,11 +185,12 @@
     <MESSAGE value="deletion of templates" />
     <MESSAGE value="fixed app create error" />
     <MESSAGE value="file cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="file cleanup" />
+    <MESSAGE value="fixed app again, first instance of database" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed app again, first instance of database" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MiniProjectBlock3$main.coverage" NAME="main Coverage Results" MODIFIED="1708513733962" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/RestartedMiniProjectBlock3$views.coverage" NAME="views Coverage Results" MODIFIED="1708548899291" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Website" />
-    <SUITE FILE_PATH="coverage/RestartedMiniProjectBlock3$main.coverage" NAME="main Coverage Results" MODIFIED="1708623170017" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/RestartedMiniProjectBlock3$main.coverage" NAME="main Coverage Results" MODIFIED="1708698114761" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

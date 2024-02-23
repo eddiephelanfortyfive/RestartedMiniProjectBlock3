@@ -11,10 +11,10 @@ class Note (db.Model):
     # if you want to get the columns from another table you use .whatever (user.email, user.password)
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
+    username = db.Column(db.String(50), unique=True)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
     first_name = db.Column(db.String(150), nullable=False)
-    last_name = db.Column(db.String(150), nullable=False)
-    user_type = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(150))
+    user_type = db.Column(db.String(50))
     notes = db.relationship('Note', backref='')
