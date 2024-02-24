@@ -45,7 +45,7 @@ def create_database(app):
     with app.app_context():
         if not path.exists('Website/' + DB_NAME):
             # next line allows you to delete database and start fresh
-            db.drop_all()
+            # db.drop_all()
 
             db.create_all()
             # prints out database created successfully
