@@ -63,9 +63,9 @@ def register():
             db.session.add(new_user)
             db.session.commit()
             # logs in user after they create their account , might want to change to pending
-            login_user(user, remember=True)
+            # login_user(user, remember=True)
             flash('Account created', category='success')
-            return redirect(url_for('views.home'))
+            # return redirect(url_for('views.home'))
 
             #add to database
     return render_template("sign_up.html", user=current_user)
