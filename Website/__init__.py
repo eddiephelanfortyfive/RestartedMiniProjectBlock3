@@ -1,5 +1,8 @@
 from flask import Flask
-from sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+from os import path
+from flask import current_app
+
 
 db = SQLAlchemy()
 DB_NAME = "ClubHub.db"
@@ -19,7 +22,19 @@ def create_app():
     from .views import views
     from .auth import auth
 
+
     app.register_blueprint(views,url_prefix='/')
     app.register_blueprint(auth,url_prefix='/')
 
+    from .models import User, Note
+    create_database(app)
+
     return app
+
+def create_database(app):
+    with app.app_context():
+        if not path.exists('Website/' + DB_NAME):
+            # next line allows you to delete database and start fresh
+            # db.drop_all()
+            db.create_all()
+            print('Database created successfully!')
