@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, flash, redirect, url_for
 from . import db
 from .models import User
+from .models import Clubs
 from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
 from flask_login import login_user, login_required, logout_user, current_user
@@ -80,3 +81,41 @@ def sign_up():
 
             #add to database
     return render_template("sign_up.html", user=current_user)
+@auth.route('/clubs')
+def clubs():
+    clubs = Clubs.query.all()
+    return render_template("clubs.html", clubs=clubs, user=current_user)
+
+
+from flask import request, redirect, url_for
+
+
+from flask import redirect, url_for
+
+@auth.route('/create_club', methods=['POST'])
+def create_club():
+    if request.method == 'POST':
+        # Get form data
+        club_name = request.form['name']
+        club_description = request.form['description']
+        coordinator_id = current_user.id  # Get current user's ID
+
+        # Check if a club with the same name already exists
+        existing_club = Clubs.query.filter_by(club_name=club_name).first()
+        if existing_club:
+            flash('A club with the same name already exists.', 'error')
+            return redirect(url_for('auth.clubs'))
+
+        # Save the club to the database
+        new_club = Clubs(club_name=club_name, club_description=club_description, coordinator_id=coordinator_id)
+        db.session.add(new_club)
+        db.session.commit()
+
+        # Redirect back to the clubs page after creating the club
+        flash('Club created successfully.', 'success')
+        return redirect(url_for('auth.clubs'))  # Corrected URL
+
+    # Handle other HTTP methods if necessary
+    return redirect(url_for('auth.clubs'))  # Corrected URL
+
+
