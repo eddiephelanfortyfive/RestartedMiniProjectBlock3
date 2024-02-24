@@ -1,5 +1,36 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %}
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
 {% block content %}
+
+
+{% if user.user_type == 'admin' %}
+    <h1> Welcome Admin-Coordinator </h1>
+{# Add All Admin relevant code here #}
+    <h2>Pending Users</h2>
+    <ul>
+        {% for pending_user in pending_users %}
+            <li>
+                {{ pending_user.username }} - {{ pending_user.email }}
+                <form method= "POST" action="{{ url_for('auth.approve_user',user_id=pending_user.id) }}">
+                    <button type="submit" name="action" value="approve">Approve</button>
+                    <button type="submit" name="action" value="deny">Deny</button>
+                </form>
+             </li>
+        {% endfor %}
+    </ul>
+
+
+{% elif user.user_type == 'pending' %}
+        <p>Your account is pending approval.</p>
+{# Add All pending code here #}
+
+
+{% elif user.user_type == 'coordinator' %}
+        <h1> Welcome Coordinator </h1>
+
+{% else  %}
+{# Homepage for users #}
+{# Add All user code here #}
 
 {# notes code #}
 <h1 align="centre">Notes</h1>
@@ -21,5 +52,5 @@
         </div>
         </form>
 {# end of notes code #}
-
+{% endif %}
 {% endblock %}
