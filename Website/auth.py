@@ -1,10 +1,10 @@
-from flask import Blueprint, request, render_template, flash, redirect, url_for
-from . import db
-from .models import User
-from werkzeug.security import generate_password_hash, check_password_hash
-auth = Blueprint('auth', __name__)
-from flask_login import login_user, login_required, logout_user, current_user
-from flask import session
+from flask import request, flash, redirect, url_for, render_template
+from flask_login import login_user, current_user, login_required, logout_user
+from werkzeug.datastructures import auth
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from Website import User, db
+
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
