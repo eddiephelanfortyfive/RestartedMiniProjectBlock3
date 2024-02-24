@@ -5,7 +5,7 @@ from .models import Clubs
 from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
 from flask_login import login_user, login_required, logout_user, current_user
-
+from flask import session
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -35,12 +35,19 @@ def logout():
 
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
-def register():
+def sign_up():
     if request.method == 'POST':
         email = request.form.get('email')
         first_name = request.form.get('firstName')
+        last_name = request.form.get('lastName')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
+
+        users_count = User.query.count()
+        if users_count == 0:
+            user_type = 'admin'
+        else:
+            user_type = 'pending'
 
         user = User.query.filter_by(email=email).first()
         if user:
@@ -52,6 +59,9 @@ def register():
         elif len(first_name) < 2:
             flash('First name must be greater than 1 characters.', category='error')
 
+        elif len(last_name) < 2:
+            flash('Last name must be greater than 1 characters.', category='error')
+
         elif password1 != password2:
             flash('Passwords don\'t match.', category='error')
 
@@ -59,9 +69,11 @@ def register():
             flash('Password must be at least 7 characters', category='error')
 
         else:
-            new_user = User(email=email, first_name=first_name, password=generate_password_hash(password1, method='pbkdf2:sha256'))
+            new_user = User(email=email, first_name=first_name,last_name=last_name, password=generate_password_hash(
+                password1, method='pbkdf2:sha256'), user_type=user_type)
             db.session.add(new_user)
             db.session.commit()
+
             # logs in user after they create their account , might want to change to pending
             # login_user(user, remember=True)
             flash('Account created', category='success')
