@@ -46,6 +46,7 @@ def create_database(app):
             # next line allows you to delete database and start fresh
             #db.drop_all()
 
+
             db.create_all()
             # prints out database created successfully
             print('Database created successfully!')

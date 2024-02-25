@@ -51,7 +51,7 @@ def sign_up():
 
         user = User.query.filter_by(email=email).first()
         if user:
-            flash('Email already exists.', category='error')
+            flash('User already exists.', category='error')
 
         elif len(email) < 4:
             flash('Email must be greater than 4 characters.', category='error')
@@ -81,6 +81,10 @@ def sign_up():
 
             #add to database
     return render_template("sign_up.html", user=current_user)
+
+# @auth.route('/profile', methods=['GET', 'POST'])
+# def edit_profile():
+#     return
 @auth.route('/clubs')
 def clubs():
     clubs = Clubs.query.all()
