@@ -31,8 +31,8 @@ class Clubs(db.Model):
     club_approval = db.Column(db.Boolean)
 
 class Members(db.Model):
-    club_id = db.Column(db.Integer, db.ForeignKey('clubs.club_id'), foreign_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), foreign_key=True)
+    club_id = db.Column(db.Integer, db.ForeignKey('clubs.club_id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     user_approval = db.Column(db.Boolean)
     is_coordinator = db.Column(db.Boolean)
 
