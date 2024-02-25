@@ -140,6 +140,8 @@ def create_club():
         club_description = request.form['description']
         coordinator_id = current_user.id
 
+        current_user.is_coordinator = True
+
         existing_club = Clubs.query.filter_by(club_name=club_name).first()
         if existing_club:
             flash('A club with the same name already exists.', 'error')

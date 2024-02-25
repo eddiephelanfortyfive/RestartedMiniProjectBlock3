@@ -21,6 +21,7 @@ class User(db.Model, UserMixin):
     user_type = db.Column(db.String(50))
     notes = db.relationship('Note', backref='')
     contact_number = db.Column(db.String(15), unique=True)
+    is_coordinator = db.Column(db.Boolean, default=False)
 
 
 class Clubs(db.Model):
@@ -31,10 +32,12 @@ class Clubs(db.Model):
     club_approval = db.Column(db.Boolean)
 
 class Members(db.Model):
-    club_id = db.Column(db.Integer, db.ForeignKey('clubs.club_id'), foreign_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), foreign_key=True)
+    club_id = db.Column(db.Integer, db.ForeignKey('clubs.club_id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     user_approval = db.Column(db.Boolean)
-    is_coordinator = db.Column(db.Boolean)
+    # is_coordinator = db.Column(db.Boolean)
+
+
 
 
 class Events(db.Model):
