@@ -19,13 +19,14 @@
 
                 <!-- User Approval link (visible only to admin) -->
                 {% if user.is_authenticated %}
-                 <a class="nav-item nav-link" id="home" href="/">Home</a> 
+{#                 <a class="nav-item nav-link" id="home" href="/">Home</a> #}
                 <a class="nav-item nav-link" id="clubs" href="/clubs">Clubs</a>
                 <a class="nav-item nav-link" id="events" href="/events">Events</a>
                 <a class="nav-item nav-link" id="profile" href="/profile">Profile</a>
                 <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
                     {% if user.user_type == 'admin' %}
                         <a class="nav-item nav-link" id="user-approval" href="/user-approval">User Approval</a>
+                        <a class="nav-item nav-link" id="club-approval" href="/club-approval">Club Approval</a>
                     {% endif %}
                 {% else %}
                     <!-- Login and Sign Up links -->

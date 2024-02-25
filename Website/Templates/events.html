@@ -32,6 +32,7 @@
       </div>
       {% endfor %}
     </div>
+        {% if current_user.user_type!='student' %}
     <div class="col-md-4">
       <!-- Form to create a new event -->
       <div class="card">
@@ -67,6 +68,7 @@
         </div>
       </div>
     </div>
+  {% endif %}
   </div>
 </div>
 {% endblock %}
