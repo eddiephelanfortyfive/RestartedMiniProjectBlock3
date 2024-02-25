@@ -28,7 +28,7 @@ class Clubs(db.Model):
     club_name = db.Column(db.String(255), nullable=False, unique=True)
     club_description = db.Column(db.Text, nullable=False)
     coordinator_id = db.Column(db.Integer)
-    club_approval = db.Column(db.Boolean)
+    club_approval = db.Column(db.Boolean, default=None)
 
 class Members(db.Model):
     club_id = db.Column(db.Integer, db.ForeignKey('clubs.club_id'), primary_key=True)
