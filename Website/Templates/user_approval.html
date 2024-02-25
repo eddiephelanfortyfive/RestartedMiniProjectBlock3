@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% block title %}User Approval{% endblock %}
+
+
+{% block content %}
+
+<h1> Welcome Admin-Coordinator </h1>
+<h2>Pending Users</h2>
+<ul>
+    {% for pending_user in pending_users %}
+        <li>
+            {{ pending_user.username }} - {{ pending_user.email }}
+            <form method="POST" action="{{ url_for('auth.approve_user', user_id=pending_user.id) }}">
+                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                <button type="submit" name="action" value="approve_coordinator" class="btn btn-info">Approve as Coordinator</button>
+                <button type="submit" name="action" value="deny" class="btn btn-danger">Deny</button>
+
+            </form>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
