@@ -19,9 +19,11 @@
 
 
                 {% if user.is_authenticated %}
+                    {% if current_user.user_type!='pending' %}
 {#                 <a class="nav-item nav-link" id="home" href="/">Home</a> #}
                 <a class="nav-item nav-link" id="clubs" href="/clubs">Clubs</a>
                 <a class="nav-item nav-link" id="events" href="/events">Events</a>
+                        {% endif %}
                 <a class="nav-item nav-link" id="profile" href="/profile">Profile</a>
                 <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
                     {% if user.user_type == 'admin' %}
