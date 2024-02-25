@@ -3,7 +3,8 @@ import json
 from flask import Blueprint, request, flash, render_template, jsonify
 from flask_login import login_required, current_user
 
-from Website import db
+from .utils import db
+
 from Website.models import Note
 
 views = Blueprint('views', __name__)

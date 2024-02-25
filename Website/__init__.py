@@ -5,10 +5,9 @@ from flask import current_app
 from flask_login import LoginManager
 
 from .models import User
+from.utils import db
 
-db = SQLAlchemy()
 DB_NAME = "ClubHub.db"
-
 
 
 def create_app():
