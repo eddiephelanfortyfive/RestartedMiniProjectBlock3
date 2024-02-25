@@ -4,12 +4,12 @@ from werkzeug.datastructures import auth
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .models import User
-
 from .utils import db
-
+from .models import Clubs
+from .models import Events
+from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
-
-
+from flask_login import login_user, login_required, logout_user, current_user
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -52,7 +52,7 @@ def sign_up():
 
         user = User.query.filter_by(email=email).first()
         if user:
-            flash('Email already exists.', category='error')
+            flash('User already exists.', category='error')
 
         elif len(email) < 4:
             flash('Email must be greater than 4 characters.', category='error')
@@ -78,11 +78,10 @@ def sign_up():
             # logs in user after they create their account , might want to change to pending
             # login_user(user, remember=True)
             flash('Account created', category='success')
-            # return redirect(url_for('views.home'))
+            return redirect(url_for('views.home'))
 
             #add to database
     return render_template("sign_up.html", user=current_user)
-
 
 @auth.route('/user-approval')
 @login_required
@@ -127,3 +126,79 @@ def approve_user(user_id):
     return render_template("user_approval.html", user=current_user, pending_users=pending_users)
 
 
+
+# @auth.route('/profile', methods=['GET', 'POST'])
+# def edit_profile():
+#     return
+@auth.route('/clubs')
+def clubs():
+    clubs = Clubs.query.all()
+    return render_template("clubs.html", clubs=clubs, user=current_user)
+
+
+@auth.route('/create_club', methods=['POST'])
+def create_club():
+    if request.method == 'POST':
+        # Get form data
+        club_name = request.form['name']
+        club_description = request.form['description']
+        coordinator_id = current_user.id
+
+        existing_club = Clubs.query.filter_by(club_name=club_name).first()
+        if existing_club:
+            flash('A club with the same name already exists.', 'error')
+            return redirect(url_for('auth.clubs'))
+
+        new_club = Clubs(club_name=club_name, club_description=club_description, coordinator_id=coordinator_id)
+        db.session.add(new_club)
+        db.session.commit()
+        flash('Club created successfully.', 'success')
+        return redirect(url_for('auth.clubs'))
+
+    return redirect(url_for('auth.clubs'))
+
+@auth.route('/events')
+def events():
+    user_coordinated_clubs = Clubs.query.filter_by(coordinator_id=current_user.id).all()
+    events = Events.query.all()
+    return render_template("events.html", events=events, user_coordinated_clubs=user_coordinated_clubs,
+                           user=current_user)
+
+
+from datetime import datetime
+@auth.route('/create_event', methods=['POST'])
+def create_event():
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        venue = request.form['venue']
+        datetime_str = request.form['datetime']
+        club_id = request.form['club']  # Extract club ID from form data
+
+        # Convert the datetime string to a Python datetime object
+        event_datetime = datetime.fromisoformat(datetime_str)
+
+        new_event = Events(event_title=title, event_description=description, event_venue=venue,
+                           event_date_time=event_datetime, club_id=club_id)  # Include club ID in the new event
+        db.session.add(new_event)
+        db.session.commit()
+
+        flash('Event created successfully.', 'success')
+        return redirect(url_for('auth.events'))
+
+    return redirect(url_for('auth.events'))
+
+@auth.route('/delete_event/<int:event_id>', methods=['POST'])
+@login_required
+def delete_event(event_id):
+    event = Events.query.get_or_404(event_id)
+    club = Clubs.query.get_or_404(event.club_id)
+
+    if current_user.id == club.coordinator_id or current_user.is_admin_coordinator:
+        db.session.delete(event)
+        db.session.commit()
+        flash('Event deleted successfully.', 'success')
+    else:
+        flash('You do not have permission to delete this event.', 'error')
+
+    return redirect(url_for('auth.events'))
