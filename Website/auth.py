@@ -1,12 +1,15 @@
-from flask import Blueprint, request, render_template, flash, redirect, url_for
-from . import db
+from flask import request, flash, redirect, url_for, render_template, Blueprint
+from flask_login import login_user, current_user, login_required, logout_user
+from werkzeug.datastructures import auth
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from .models import User
+from .utils import db
 from .models import Clubs
 from .models import Events
 from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
 from flask_login import login_user, login_required, logout_user, current_user
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -18,7 +21,7 @@ def login():
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                return render_template("home.html", user=current_user)
             else:
                 flash('Incorrect password, try again.', category='error')
         else:
@@ -26,13 +29,11 @@ def login():
 
     return render_template("login.html", user=current_user)
 
-
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
-
 
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
@@ -81,6 +82,50 @@ def sign_up():
 
             #add to database
     return render_template("sign_up.html", user=current_user)
+
+@auth.route('/user-approval')
+@login_required
+def user_approval():
+    # Ensure the current user is authorized to access this route (admin or coordinator)
+    if current_user.user_type not in ['admin', 'coordinator']:
+        flash('You are not authorized to access this page.', category='error')
+        return redirect(url_for('auth.login'))
+
+    # Query the database to fetch pending users
+    pending_users = User.query.filter_by(user_type='pending').all()
+
+    # Render the user_approval.html template, passing the pending_users variable to it
+    return render_template("user_approval.html", user=current_user, pending_users=pending_users)
+
+
+
+
+@auth.route('/approve-user/<int:user_id>', methods=['POST'])
+@login_required
+def approve_user(user_id):
+    pending_users = User.query.filter_by(user_type='pending').all()
+    print(pending_users)
+    user = User.query.get(user_id)
+    action = request.form.get('action')  # Retrieve action from form data
+
+    if action == 'approve':
+        user.user_type = 'student'
+        db.session.commit()
+        flash('User approved successfully!', category='success')
+    elif action == 'approve_coordinator':
+        user.user_type = 'coordinator'
+        db.session.commit()
+        flash('User approved as Coordinator successfully', category='success')
+    elif action == 'deny':
+        db.session.delete(user)
+        db.session.commit()
+        flash('User denied and removed successfully!', category='success')
+    else:
+        flash('Invalid action!', category='error')
+
+    return render_template("user_approval.html", user=current_user, pending_users=pending_users)
+
+
 
 # @auth.route('/profile', methods=['GET', 'POST'])
 # def edit_profile():

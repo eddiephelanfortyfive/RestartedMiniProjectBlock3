@@ -3,10 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from os import path
 from flask_login import LoginManager
 
+from .models import User
+from.utils import db
 
-db = SQLAlchemy()
 DB_NAME = "ClubHub.db"
-
 
 
 def create_app():
@@ -44,9 +44,10 @@ def create_database(app):
     with app.app_context():
         if not path.exists('Website/' + DB_NAME):
             # next line allows you to delete database and start fresh
-            #db.drop_all()
+            # db.drop_all()
 
 
             db.create_all()
+
             # prints out database created successfully
             print('Database created successfully!')
