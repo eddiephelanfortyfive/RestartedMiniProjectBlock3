@@ -1,56 +1,34 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-
-
-{% if user.user_type == 'admin' %}
-    <h1> Welcome Admin-Coordinator </h1>
-{# Add All Admin relevant code here #}
-    <h2>Pending Users</h2>
-    <ul>
-        {% for pending_user in pending_users %}
-            <li>
-                {{ pending_user.username }} - {{ pending_user.email }}
-                <form method= "POST" action="{{ url_for('auth.approve_user',user_id=pending_user.id) }}">
-                    <button type="submit" name="action" value="approve">Approve</button>
-                    <button type="submit" name="action" value="deny">Deny</button>
-                </form>
-             </li>
-        {% endfor %}
-    </ul>
-
-
-{% elif user.user_type == 'pending' %}
+    {% if user.user_type == 'admin' %}
+{#        {% include 'user_approval.html' %}#}
+    {% elif user.user_type == 'pending' %}
         <p>Your account is pending approval.</p>
-{# Add All pending code here #}
-
-
-{% elif user.user_type == 'coordinator' %}
+    {% elif user.user_type == 'coordinator' %}
         <h1> Welcome Coordinator </h1>
-
-{% else  %}
-{# Homepage for users #}
-{# Add All user code here #}
-
-{# notes code #}
-<h1 align="centre">Notes</h1>
-<ul class="list-group list-group-flush" id="notes">
-    {% for note in user.notes %}
-    <li class="list-group-item">{{ note.data }}
-{# code for deleting notes   #}
-        <button type="button" class="close" onclick="deleteNote({{ note.id }})">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </li>
-    {% endfor %}
-</ul>
-    <form method="POST">
-        <textarea name="note" id="note" class="form-control"></textarea>
-        <br />
-        <div align="centre">
-            <button type="submit" class="btn btn-primary">Add Note</button>
-        </div>
+    {% else %}
+        <!-- Homepage for users -->
+        <!-- Add All user code here -->
+        <!-- notes code -->
+        <h1 align="centre">Notes</h1>
+        <ul class="list-group list-group-flush" id="notes">
+            {% for note in user.notes %}
+            <li class="list-group-item">{{ note.data }}
+                <!-- code for deleting notes -->
+                <button type="button" class="close" onclick="deleteNote({{ note.id }})">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </li>
+            {% endfor %}
+        </ul>
+        <form method="POST">
+            <textarea name="note" id="note" class="form-control"></textarea>
+            <br />
+            <div align="centre">
+                <button type="submit" class="btn btn-primary">Add Note</button>
+            </div>
         </form>
-{# end of notes code #}
-{% endif %}
+        <!-- end of notes code -->
+    {% endif %}
 {% endblock %}

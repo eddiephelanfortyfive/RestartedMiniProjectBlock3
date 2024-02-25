@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8">
+      <h1>Events</h1>
+      <!-- Display existing events -->
+      {% for event in events %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h2 class="card-title">{{ event.event_title }}</h2>
+          <p class="card-text">{{ event.event_description }}</p>
+          <p class="card-text">Venue: {{ event.event_venue }}</p>
+          <!-- Format the date and time to remove seconds -->
+          <p class="card-text">Date & Time: {{ event.event_date_time.strftime('%Y-%m-%d %H:%M') }}</p>
+          {% set club = user_coordinated_clubs | selectattr('club_id', 'equalto', event.club_id) | first %}
+          <!-- Fetch the club information based on event.club_id -->
+          {% if club %}
+          <p class="card-text">Club: {{ club.club_name }}</p>
+          {% endif %}
+        </div>
+        {% set is_coordinator = current_user.is_authenticated and club and (current_user.id == club.coordinator_id) %}
+        {% if is_coordinator or current_user.is_admin_coordinator %}
+        <div class="card-footer text-end">
+          <form method="POST" action="/delete_event/{{ event.event_id }}">
+            <button type="submit" class="btn btn-danger">Delete Event</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="col-md-4">
+      <!-- Form to create a new event -->
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Create a New Event</h2>
+          <form method="POST" action="/create_event">
+            <div class="form-group">
+              <label for="title">Title:</label>
+              <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+              <label for="description">Description:</label>
+              <textarea class="form-control" id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="venue">Venue:</label>
+              <input type="text" class="form-control" id="venue" name="venue" required>
+            </div>
+            <div class="form-group">
+              <label for="datetime">Date & Time:</label>
+              <input type="datetime-local" class="form-control" id="datetime" name="datetime" required> <!-- Use datetime-local input type -->
+            </div>
+            <div class="form-group">
+              <label for="club">Club:</label>
+              <select class="form-control" id="club" name="club" required>
+                {% for club in user_coordinated_clubs %}
+                <option value="{{ club.club_id }}">{{ club.club_name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Event</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

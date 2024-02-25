@@ -1,7 +1,8 @@
-from . import db
 from flask_login import UserMixin
 from sqlalchemy import func
 
+
+from .utils import db
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,6 +20,7 @@ class User(db.Model, UserMixin):
     last_name = db.Column(db.String(150))
     user_type = db.Column(db.String(50))
     notes = db.relationship('Note', backref='')
+    contact_number = db.Column(db.String(15), unique=True)
 
 
 class Clubs(db.Model):
