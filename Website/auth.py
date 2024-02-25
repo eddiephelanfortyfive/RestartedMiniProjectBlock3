@@ -98,30 +98,26 @@ def user_approval():
     return render_template("user_approval.html", user=current_user, pending_users=pending_users)
 
 
-
-
 @auth.route('/approve-user/<int:user_id>', methods=['POST'])
 @login_required
 def approve_user(user_id):
-    pending_users = User.query.filter_by(user_type='pending').all()
-    print(pending_users)
     user = User.query.get(user_id)
     action = request.form.get('action')  # Retrieve action from form data
 
     if action == 'approve':
         user.user_type = 'student'
-        db.session.commit()
         flash('User approved successfully!', category='success')
     elif action == 'approve_coordinator':
         user.user_type = 'coordinator'
-        db.session.commit()
         flash('User approved as Coordinator successfully', category='success')
     elif action == 'deny':
         db.session.delete(user)
-        db.session.commit()
         flash('User denied and removed successfully!', category='success')
     else:
         flash('Invalid action!', category='error')
+
+    db.session.commit()
+    pending_users = User.query.filter_by(user_type='pending').all()
 
     return render_template("user_approval.html", user=current_user, pending_users=pending_users)
 
@@ -163,7 +159,6 @@ def events():
     events = Events.query.all()
     return render_template("events.html", events=events, user_coordinated_clubs=user_coordinated_clubs,
                            user=current_user)
-
 
 from datetime import datetime
 @auth.route('/create_event', methods=['POST'])
