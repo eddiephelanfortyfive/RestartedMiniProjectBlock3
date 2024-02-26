@@ -5,9 +5,11 @@ from .utils import db
 from .models import Clubs
 from .models import Events
 from .models import Members
+from .models import Event_registration
 from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
 from flask_login import login_user, login_required, logout_user, current_user
+from datetime import datetime
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -85,6 +87,7 @@ def sign_up():
 @login_required
 def user_approval():
     # Ensure the current user is authorized to access this route (admin or coordinator)
+    # Might have to remove this since a student doesn't see this page
     if current_user.user_type not in ['admin', 'coordinator']:
         flash('You are not authorized to access this page.', category='error')
         return redirect(url_for('auth.login'))
@@ -127,7 +130,6 @@ def clubs():
     return render_template("clubs.html", clubs=approved_clubs, Members=Members, user=current_user)
 
 
-
 @auth.route('/create_club', methods=['POST'])
 def create_club():
     if request.method == 'POST':
@@ -143,11 +145,13 @@ def create_club():
             flash('A club with the same name already exists.', 'error')
             return redirect(url_for('auth.clubs'))
 
-        new_club = Clubs(club_name=club_name, club_description=club_description, coordinator_id=coordinator_id)
+        approval_timestamp = datetime.now()
+
+        new_club = Clubs(club_name=club_name, club_description=club_description, coordinator_id=coordinator_id )
         db.session.add(new_club)
         db.session.commit()
         flash('Club created successfully. It is now pending approval.', 'success')
-        new_Member = Members(club_id=new_club.club_id , user_id=current_user.id, user_approval=True)
+        new_Member = Members(club_id=new_club.club_id , user_id=current_user.id, user_approval=True, approval_date_time=approval_timestamp)
         db.session.add(new_Member)
         db.session.commit()
         return redirect(url_for('auth.clubs'))
@@ -216,6 +220,42 @@ def register_event(event_id):
     else:
         flash('Registration request sent. Waiting for coordinator approval.', 'info')
     return redirect(url_for('auth.events'))
+
+@auth.route('/approve-event-students/<int:user_id>', methods=['POST'])
+@login_required
+def apply_event_students(user_id):
+    student_registration = Event_registration.query.get(user_id)
+    action = request.form.get('action')  # Retrieve action from form data
+
+    if action == 'approve':
+        student_registration.user_event_approval = True
+        flash('Student accepted to event successfully!', category='success')
+    elif action == 'deny':
+        student_registration.user_event_approval = False
+        flash('Student denied to event successfully', category='success')
+    else:
+        flash('Invalid action!', category='error')
+
+    db.session.commit()
+    pending_event_students = Event_registration.query.filter_by(user_event_approval=None).all()
+
+    return render_template("event_approval.html", pending_event_students=pending_event_students, user=current_user,)
+
+@auth.route('/event-approval')
+@login_required
+def event_approval():
+    # Ensure the current user is authorized to access this route (admin or coordinator)
+    # Might have to remove this since a student doesn't see this page
+    if current_user.user_type not in ['admin', 'coordinator']:
+        flash('You are not authorized to access this page.', category='error')
+        return redirect(url_for('auth.login'))
+
+    # Query the database to fetch pending users
+    pending_event_students = Event_registration.query.filter_by(user_event_approval=None).all()
+
+    # Render the user_approval.html template, passing the pending_users variable to it
+    return render_template("event_approval.html",  pending_event_students = pending_event_students, user=current_user,)
+
 
 
 @auth.route('/approve_registration/<int:event_id>/<int:user_id>', methods=['POST'])

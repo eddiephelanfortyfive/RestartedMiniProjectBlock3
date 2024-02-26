@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}User Approval{% endblock %}
+
+{% block content %}
+
+<style>
+    .no-users-message {
+        margin-top: 50px;
+        text-align: center;
+        padding: 20px;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        color: #721c24;
+    }
+</style>
+
+<h1>Welcome Coordinator</h1>
+
+{% if pending_event_students is none or pending_event_students|length == 0 %}
+    <div class="no-users-message">
+        <strong>No students pending event approval!</strong>
+    </div>
+{% else %}
+    <h2>Pending students</h2>
+    <ul>
+        {% for pending_event_student in pending_event_students %}
+            <li>
+                {{ pending_event_student.username }} - {{ pending_event_student.email }}
+                <form method="POST" action="{{ url_for('auth.approve-event-students', user_id=pending_event_student.user_id) }}">
+                    <button type="submit" name="action" value="approve" class="btn btn-success">Approve student</button>
+                    <button type="submit" name="action" value="deny" class="btn btn-danger">Deny student</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}

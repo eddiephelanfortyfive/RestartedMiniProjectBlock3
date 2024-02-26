@@ -4,7 +4,7 @@ from os import path
 from flask_login import LoginManager
 
 from .models import User
-from.utils import db
+from .utils import db
 
 DB_NAME = "ClubHub.db"
 
@@ -25,7 +25,7 @@ def create_app():
     app.register_blueprint(views,url_prefix='/')
     app.register_blueprint(auth,url_prefix='/')
 
-    from .models import User, Note
+    from .models import User
     create_database(app)
 
     login_manager = LoginManager()
@@ -45,6 +45,7 @@ def create_database(app):
         if not path.exists('Website/' + DB_NAME):
             # next line allows you to delete database and start fresh
             db.drop_all()
+
 
 
             db.create_all()
