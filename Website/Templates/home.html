@@ -11,24 +11,6 @@
         <!-- Homepage for users -->
         <!-- Add All user code here -->
         <!-- notes code -->
-        <h1 align="centre">Notes</h1>
-        <ul class="list-group list-group-flush" id="notes">
-            {% for note in user.notes %}
-            <li class="list-group-item">{{ note.data }}
-                <!-- code for deleting notes -->
-                <button type="button" class="close" onclick="deleteNote({{ note.id }})">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </li>
-            {% endfor %}
-        </ul>
-        <form method="POST">
-            <textarea name="note" id="note" class="form-control"></textarea>
-            <br />
-            <div align="centre">
-                <button type="submit" class="btn btn-primary">Add Note</button>
-            </div>
-        </form>
-        <!-- end of notes code -->
+       <h4>Homepage</h4>
     {% endif %}
 {% endblock %}

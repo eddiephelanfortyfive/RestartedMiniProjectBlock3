@@ -4,13 +4,6 @@ from sqlalchemy import func
 
 from .utils import db
 
-class Note(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.String(10000))
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    # if you want to get the columns from another table you use .whatever (user.email, user.password)
-
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,7 +12,6 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(150), nullable=False)
     last_name = db.Column(db.String(150))
     user_type = db.Column(db.String(50))
-    notes = db.relationship('Note', backref='')
     contact_number = db.Column(db.String(15), unique=True)
     is_coordinator = db.Column(db.Boolean, default=False)
 
