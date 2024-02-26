@@ -146,7 +146,7 @@ def create_club():
         db.session.add(new_club)
         db.session.commit()
         flash('Club created successfully. It is now pending approval.', 'success')
-        new_Member = Members(club_id=new_club.club_id , user_id=current_user.id, user_approval=True, is_coordinator=True)
+        new_Member = Members(club_id=new_club.club_id , user_id=current_user.id, user_approval=True)
         db.session.add(new_Member)
         db.session.commit()
         return redirect(url_for('auth.clubs'))
