@@ -1,4 +1,4 @@
-from flask import request, flash, redirect, url_for, render_template, Blueprint
+from flask import request, flash, redirect, url_for, render_template, Blueprint, abort
 
 from .models import User
 from .utils import db
@@ -107,6 +107,7 @@ def approve_user(user_id):
         flash('User approved successfully!', category='success')
     elif action == 'approve_coordinator':
         user.user_type = 'coordinator'
+        user.is_coordinator = True
         flash('User approved as Coordinator successfully', category='success')
     elif action == 'deny':
         db.session.delete(user)
@@ -123,7 +124,7 @@ def approve_user(user_id):
 @auth.route('/clubs')
 def clubs():
     approved_clubs = Clubs.query.filter_by(club_approval=True).all()
-    return render_template("clubs.html", clubs=approved_clubs, user=current_user)
+    return render_template("clubs.html", clubs=approved_clubs, Members=Members, user=current_user)
 
 
 
@@ -269,3 +270,72 @@ def delete_event(event_id):
         flash('You do not have permission to delete this event.', 'error')
 
     return redirect(url_for('auth.events'))
+@auth.route('/apply-membership/<int:club_id>', methods=['POST'])
+@login_required
+def apply_membership(club_id):
+    # Check if the user is already a member of the club
+    existing_membership = Members.query.filter_by(club_id=club_id, user_id=current_user.id).first()
+    if existing_membership:
+        flash('You have already applied to this club.', 'error')
+        return redirect(url_for('auth.clubs'))
+
+    user_clubs_count = Members.query.filter_by(user_id=current_user.id).count()
+    if user_clubs_count >= 3:
+        flash('You can only be a member of maximum 3 clubs.', 'error')
+        return redirect(url_for('auth.clubs'))
+
+    # Create a new membership record
+    new_membership = Members(club_id=club_id, user_id=current_user.id)
+    db.session.add(new_membership)
+    db.session.commit()
+
+    flash('Membership application submitted. Wait for coordinator approval.', 'success')
+    return redirect(url_for('auth.clubs'))
+
+
+@auth.route('/members_approval')
+@login_required
+def members_approval():
+    if current_user.user_type != 'coordinator':
+        abort(403)  # Only coordinators can access this page
+
+    club = Clubs.query.filter_by(coordinator_id=current_user.id).first()
+    if not club:
+        return render_template('no_applications.html')  # No club applications
+
+    coordinator_club = Members.query.filter_by(user_id=current_user.id, user_approval=True).first()
+    if coordinator_club is None:
+        # Handle the case where coordinator_club is None, for example, by returning an empty list
+        club_applications = []
+    else:
+        club_applications = Members.query.filter_by(club_id=coordinator_club.club_id, user_approval=None).all()
+
+    return render_template('members_approval.html', club=club, applications=club_applications, user=current_user,
+                           Users=User)
+
+
+@auth.route('/approve-club/<int:member_id>/<int:club_id>', methods=['POST'])
+@login_required
+def approve_member(member_id, club_id):
+    # Retrieve the member from the database
+    member = Members.query.filter_by(user_id=member_id, club_id=club_id).first()
+
+    # Check if the member exists
+    if member is not None:
+        action = request.form.get('action')  # Retrieve action from form data
+
+        if action == 'approve':
+            member.user_approval = True
+            flash('Member approved successfully!', category='success')
+        elif action == 'deny':
+            db.session.delete(member)
+            flash('Member denied and removed successfully!', category='success')
+        else:
+            flash('Invalid action!', category='error')
+
+        db.session.commit()
+    else:
+        flash('Member not found!', category='error')
+
+    # Redirect to the members approval page
+    return redirect(url_for('auth.members_approval'))

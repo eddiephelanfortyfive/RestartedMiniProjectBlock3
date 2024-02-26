@@ -25,11 +25,14 @@
                 <a class="nav-item nav-link" id="events" href="/events">Events</a>
                         {% endif %}
                 <a class="nav-item nav-link" id="profile" href="/profile">Profile</a>
-                <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
+                    {% if current_user.is_coordinator==True %}
+                        <a class="nav-item nav-link" id="members_approval" href="/members_approval">Members Approval</a>
+                        {% endif %}
                     {% if user.user_type == 'admin' %}
                         <a class="nav-item nav-link" id="user-approval" href="/user-approval">User Approval</a>
                         <a class="nav-item nav-link" id="club-approval" href="/club-approval">Club Approval</a>
                     {% endif %}
+                    <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>
                 {% else %}
                     <!-- Login and Sign Up links -->
                     <a class="nav-item nav-link" id="login" href="/login">Login</a>

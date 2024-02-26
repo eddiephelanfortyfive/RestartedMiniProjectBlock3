@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Members Approval{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h1>Members Approval</h1>
+  <h2>{{ club.club_name }}</h2>
+
+  {% if applications %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Applicant Name</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for application in applications %}
+          {% set user = Users.query.filter_by(id=application.user_id).first() %}
+          <tr>
+            <td>{{ user.first_name }} {{ user.last_name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('auth.approve_member', member_id=user.id, club_id=club.club_id) }}" class="d-inline">
+                <input type="hidden" name="action" value="approve">
+                <button type="submit" class="btn btn-success">Approve</button>
+              </form>
+              <form method="POST" action="{{ url_for('auth.approve_member', member_id=user.id, club_id=club.club_id) }}" class="d-inline">
+                <input type="hidden" name="action" value="deny">
+                <button type="submit" class="btn btn-danger">Deny</button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-danger" role="alert">No club applications.</div>
+  {% endif %}
+</div>
+{% endblock %}
