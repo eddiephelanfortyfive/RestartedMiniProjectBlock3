@@ -14,43 +14,33 @@
         color: #721c24;
     }
 </style>
-
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8">
-            <h1 class="mb-4">Clubs</h1>
-            {% if clubs is none or clubs|length == 0 %}
-            <div class="no-clubs-message">
-                <strong>No clubs have been created yet!</strong>
+<div class="col-md-8">
+    <h1>Clubs</h1>
+    <!-- Display existing clubs -->
+    {% for club in clubs %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2 class="card-title">{{ club.club_name }}</h2>
+                <p class="card-text">{{ club.club_description }}</p>
+                {% if current_user.user_type == 'student' %}
+                    {% set applied = Members.query.filter_by(user_id=current_user.id, club_id=club.club_id).first() %}
+                    {% if applied %}
+                        <p class="text-muted">Pending</p>
+                    {% elif current_user.clubs|length >= 3 %}
+                        <p class="text-danger">Maximum clubs reached</p>
+                    {% else %}
+                        <form action="{{ url_for('auth.apply_membership', club_id=club.club_id) }}" method="post">
+                            <button type="submit" class="btn btn-success">Apply</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
             </div>
-            {% else %}
-            {% for club in clubs %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h2 class="card-title">{{ club.club_name }}</h2>
-                    <p class="card-text">{{ club.club_description }}</p>
-                    <!-- Add more club details here -->
-
-                    <!-- Display club members -->
-                    <!-- Uncomment this section if you want to display club members -->
-
-                    <p class="card-text"><strong>Members:</strong></p>
-                    {% for member in club.members %}
-                    <p>{{ member.user.first_name }} {{ member.user.last_name }}</p>
-                    {% endfor %}
-
-
-                    <!-- Example: Display club events -->
-                    <p class="card-text"><strong>Events:</strong></p>
-
-                    <!-- Add more details as needed -->
-                     potentially view club details
-                     <a href="#" class="btn btn-primary">View Details</a>
-                </div>
-            </div>
-            {% endfor %}
-            {% endif %}
         </div>
+    {% endfor %}
+</div>
+{% if current_user.user_type == 'coordinator' %}
+    {% if current_user.is_coordinator %}
+        {% if user.is_coordinator==False %}
         <div class="col-md-4">
             <!-- Form to create a new club -->
             <div class="card">
@@ -70,7 +60,8 @@
                 </div>
             </div>
         </div>
-    </div>
+        {% endif %}
+    {% endif %}
+{% endif %}
 </div>
-
 {% endblock %}
