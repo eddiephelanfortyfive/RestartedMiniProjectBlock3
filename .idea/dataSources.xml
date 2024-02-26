@@ -13,17 +13,5 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="ClubHub [2]" uuid="7906ea11-f939-4294-8fcc-d6370c38b977">
-      <driver-ref>sqlite.xerial</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\eddie_uooosyh\PycharmProjects\RestartedMiniProjectBlock3\instance\ClubHub.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-      <libraries>
-        <library>
-          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.43.0/org/xerial/sqlite-jdbc/3.43.0.0/sqlite-jdbc-3.43.0.0.jar</url>
-        </library>
-      </libraries>
-    </data-source>
   </component>
 </project>
