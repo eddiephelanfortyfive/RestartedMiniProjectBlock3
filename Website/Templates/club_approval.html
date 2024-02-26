@@ -1,9 +1,10 @@
 {% extends "base.html" %}
+
 {% block title %}Club Approval{% endblock %}
 
 {% block content %}
 
-    <style>
+<style>
     .no-clubs-approve-message {
         margin-top: 50px;
         text-align: center;
@@ -13,38 +14,38 @@
         border-radius: 5px;
         color: #721c24;
     }
-    </style>
+</style>
 
-    <h1>Welcome Admin-Coordinator</h1>
+<h1>Welcome Admin-Coordinator</h1>
+
 <div class="container mt-5">
-  <div class="row">
-    <div class="col-md-8">
-      <h1>Club Approval</h1>
-        {% if pending_users is none or pending_users|length == 0 %}
-            <div class="no-clubs-approve-message">
-                <strong>No clubs pending approval!</strong>
-            </div>
-        {% else %}
-          <!-- Display existing clubs -->
-          {% for club in pending_clubs %}
-          <div class="card mb-3">
-            <div class="card-body">
-              <h2 class="card-title">{{ club.club_name }}</h2>
-              <p class="card-text">{{ club.club_description }}</p>
-              <!-- Add more club details here -->
-            </div>
-            <div class="card-footer">
-              <form method="POST" action="{{ url_for('auth.approve_club', club_id=club.club_id) }}">
-                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
-                <button type="submit" name="action" value="deny" class="btn btn-danger">Deny</button>
-              </form>
-            </div>
-          </div>
-          {% endfor %}
-        {% endif %}
+    <div class="row">
+        <div class="col-md-8">
+            <h1>Club Approval</h1>
+            {% if pending_users is none or pending_users|length == 0 %}
+                <div class="no-clubs-approve-message">
+                    <strong>No clubs pending approval!</strong>
+                </div>
+            {% else %}
+                <!-- Display existing clubs -->
+                {% for club in pending_clubs %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h2 class="card-title">{{ club.club_name }}</h2>
+                            <p class="card-text">{{ club.club_description }}</p>
+                            <!-- Add more club details here -->
+                        </div>
+                        <div class="card-footer">
+                            <form method="POST" action="{{ url_for('auth.approve_club', club_id=club.club_id) }}">
+                                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                                <button type="submit" name="action" value="deny" class="btn btn-danger">Deny</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
     </div>
-  </div>
 </div>
-    {% endif %}
 
 {% endblock %}
