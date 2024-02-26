@@ -5,7 +5,7 @@
 
 <h1> Welcome Admin-Coordinator </h1>
 
-    {% if pending_user in pending_users == null %}
+    {% if pending_users is none or pending_users|length == 0 %}
     <strong>No users pending approval!</strong>
     {% else %}
         <h2>Pending Users</h2>
