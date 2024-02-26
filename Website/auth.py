@@ -10,6 +10,15 @@ from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
 from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime
+
+@auth.route('/homepage')
+@login_required
+def homepage():
+    return render_template('homepage.html', user=current_user)
+
+
+
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
