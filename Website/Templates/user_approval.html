@@ -14,28 +14,46 @@
         border-radius: 5px;
         color: #721c24;
     }
+
+    .approval-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .approval-item {
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        padding: 10px;
+    }
+
+    .approve-btn {
+        margin-right: 5px;
+    }
 </style>
 
-<h1>Welcome Admin-Coordinator</h1>
+<div class="container mt-5">
+    <h1 class="text-center">Welcome Admin-Coordinator</h1>
 
-{% if pending_users is none or pending_users|length == 0 %}
-    <div class="no-users-message">
-        <strong>No users pending approval!</strong>
-    </div>
-{% else %}
-    <h2>Pending Users</h2>
-    <ul>
-        {% for pending_user in pending_users %}
-            <li>
-                {{ pending_user.first_name }} {{ pending_user.last_name }} - {{ pending_user.email }}
-                <form method="POST" action="{{ url_for('auth.approve_user', user_id=pending_user.id) }}">
-                    <button type="submit" name="action" value="approve" class="btn btn-success">Approve as User</button>
-                    <button type="submit" name="action" value="approve_coordinator" class="btn btn-info">Approve as Coordinator</button>
-                    <button type="submit" name="action" value="deny" class="btn btn-danger">Deny</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+    {% if pending_users is none or pending_users|length == 0 %}
+        <div class="no-users-message">
+            <strong>No users pending approval!</strong>
+        </div>
+    {% else %}
+        <h2 class="mt-4">Pending Users</h2>
+        <ul class="approval-list">
+            {% for pending_user in pending_users %}
+                <li class="approval-item">
+                    <p>{{ pending_user.first_name }} {{ pending_user.last_name }} - {{ pending_user.email }}</p>
+                    <form method="POST" action="{{ url_for('auth.approve_user', user_id=pending_user.id) }}">
+                        <button type="submit" name="action" value="approve" class="btn btn-success approve-btn">Approve as User</button>
+                        <button type="submit" name="action" value="approve_coordinator" class="btn btn-info approve-btn">Approve as Coordinator</button>
+                        <button type="submit" name="action" value="deny" class="btn btn-danger approve-btn">Deny</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
 
 {% endblock %}
