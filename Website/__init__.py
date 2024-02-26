@@ -4,7 +4,7 @@ from os import path
 from flask_login import LoginManager
 
 from .models import User
-from.utils import db
+from .utils import db
 
 DB_NAME = "ClubHub.db"
 
