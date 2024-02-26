@@ -4,19 +4,33 @@
 {% block content %}
 <div class="container mt-5">
   <div class="row">
-    <div class="col-md-8">
-      <h1>Clubs</h1>
-      <!-- Display existing clubs -->
-      {% for club in clubs %}
-      <div class="card mb-3">
-        <div class="card-body">
-          <h2 class="card-title">{{ club.club_name }}</h2>
-          <p class="card-text">{{ club.club_description }}</p>
-          <!-- Add more club details here -->
+    <div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4">Clubs</h1>
+            {% for club in clubs %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ club.club_name }}</h2>
+                        <p class="card-text">{{ club.club_description }}</p>
+                        <!-- Add more club details here -->
+
+                        <!-- Display club members -->
+{#                        <p class="card-text"><strong>Members:</strong></p>#}
+
+                        <!-- Example: Display club events -->
+                        <p class="card-text"><strong>Events:</strong></p>
+
+                        <!-- Add more details as needed -->
+                    {# potentially view club details#}
+                        {# <a href="#" class="btn btn-primary">View Details</a>#}
+                    </div>
+                </div>
+            {% endfor %}
         </div>
-      </div>
-      {% endfor %}
     </div>
+</div>
+
   {% if current_user.user_type == 'coordinator' %}
       {% if current_user.is_coordinator == False %}
         <div class="col-md-4">
