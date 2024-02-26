@@ -5,6 +5,7 @@ from .utils import db
 from .models import Clubs
 from .models import Events
 from .models import Members
+from .models import Event_registration
 from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
 from flask_login import login_user, login_required, logout_user, current_user
@@ -218,6 +219,42 @@ def register_event(event_id):
     else:
         flash('Registration request sent. Waiting for coordinator approval.', 'info')
     return redirect(url_for('auth.events'))
+
+@auth.route('/approve-event-students/<int:user_id>', methods=['POST'])
+@login_required
+def apply_event_students(user_id):
+    student_registration = Event_registration.query.get(user_id)
+    action = request.form.get('action')  # Retrieve action from form data
+
+    if action == 'approve':
+        student_registration.user_event_approval = True
+        flash('Student accepted to event successfully!', category='success')
+    elif action == 'deny':
+        student_registration.user_event_approval = False
+        flash('Student denied to event successfully', category='success')
+    else:
+        flash('Invalid action!', category='error')
+
+    db.session.commit()
+    pending_event_students = Event_registration.query.filter_by(user_event_approval=None).all()
+
+    return render_template("event_approval.html", pending_event_students=pending_event_students, user=current_user,)
+
+@auth.route('/event-approval')
+@login_required
+def event_approval():
+    # Ensure the current user is authorized to access this route (admin or coordinator)
+    # Might have to remove this since a student doesn't see this page
+    if current_user.user_type not in ['admin', 'coordinator']:
+        flash('You are not authorized to access this page.', category='error')
+        return redirect(url_for('auth.login'))
+
+    # Query the database to fetch pending users
+    pending_event_students = Event_registration.query.filter_by(user_event_approval=None).all()
+
+    # Render the user_approval.html template, passing the pending_users variable to it
+    return render_template("event_approval.html",  pending_event_students = pending_event_students, user=current_user,)
+
 
 
 @auth.route('/approve_registration/<int:event_id>/<int:user_id>', methods=['POST'])

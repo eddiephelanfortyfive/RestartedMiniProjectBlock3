@@ -18,20 +18,19 @@
 
 <h1>Welcome Coordinator</h1>
 
-{% if pending_users is none or pending_users|length == 0 %}
+{% if pending_event_students is none or pending_event_students|length == 0 %}
     <div class="no-users-message">
-        <strong>No users pending approval!</strong>
+        <strong>No students pending event approval!</strong>
     </div>
 {% else %}
-    <h2>Pending Users</h2>
+    <h2>Pending students</h2>
     <ul>
-        {% for pending_user in pending_users %}
+        {% for pending_event_student in pending_event_students %}
             <li>
-                {{ pending_user.username }} - {{ pending_user.email }}
-                <form method="POST" action="{{ url_for('auth.approve_user', user_id=pending_user.id) }}">
-                    <button type="submit" name="action" value="approve" class="btn btn-success">Approve as User</button>
-                    <button type="submit" name="action" value="approve_coordinator" class="btn btn-info">Approve as Coordinator</button>
-                    <button type="submit" name="action" value="deny" class="btn btn-danger">Deny</button>
+                {{ pending_event_student.username }} - {{ pending_event_student.email }}
+                <form method="POST" action="{{ url_for('auth.approve-event-students', user_id=pending_event_student.user_id) }}">
+                    <button type="submit" name="action" value="approve" class="btn btn-success">Approve student</button>
+                    <button type="submit" name="action" value="deny" class="btn btn-danger">Deny student</button>
                 </form>
             </li>
         {% endfor %}
