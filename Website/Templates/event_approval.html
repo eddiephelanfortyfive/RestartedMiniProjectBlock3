@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}User Approval{% endblock %}
+
+{% block content %}
+
+<style>
+    .no-users-message {
+        margin-top: 50px;
+        text-align: center;
+        padding: 20px;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        color: #721c24;
+    }
+</style>
+
+<h1>Welcome Coordinator</h1>
+
+{% if pending_users is none or pending_users|length == 0 %}
+    <div class="no-users-message">
+        <strong>No users pending approval!</strong>
+    </div>
+{% else %}
+    <h2>Pending Users</h2>
+    <ul>
+        {% for pending_user in pending_users %}
+            <li>
+                {{ pending_user.username }} - {{ pending_user.email }}
+                <form method="POST" action="{{ url_for('auth.approve_user', user_id=pending_user.id) }}">
+                    <button type="submit" name="action" value="approve" class="btn btn-success">Approve as User</button>
+                    <button type="submit" name="action" value="approve_coordinator" class="btn btn-info">Approve as Coordinator</button>
+                    <button type="submit" name="action" value="deny" class="btn btn-danger">Deny</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% endblock %}

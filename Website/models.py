@@ -23,13 +23,13 @@ class Clubs(db.Model):
     coordinator_id = db.Column(db.Integer)
     club_approval = db.Column(db.Boolean, default=None)
 
+
 class Members(db.Model):
     club_id = db.Column(db.Integer, db.ForeignKey('clubs.club_id'), primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     user_approval = db.Column(db.Boolean)
+    approval_date_time = db.Column(db.TIMESTAMP, nullable=False)
     # is_coordinator = db.Column(db.Boolean)
-
-
 
 
 class Events(db.Model):
@@ -39,3 +39,11 @@ class Events(db.Model):
     event_description = db.Column(db.Text, nullable=False)
     event_venue = db.Column(db.Text, nullable=False)
     event_date_time = db.Column(db.TIMESTAMP, nullable=False)
+
+class Event_registration(db.Model):
+    event_id = db.Column(db.Integer, db.ForeignKey('events.event_id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    user_event_approval = db.Column(db.Boolean, default=None)
+
+
+

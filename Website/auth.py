@@ -8,6 +8,7 @@ from .models import Members
 from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
 from flask_login import login_user, login_required, logout_user, current_user
+from datetime import datetime
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -85,6 +86,7 @@ def sign_up():
 @login_required
 def user_approval():
     # Ensure the current user is authorized to access this route (admin or coordinator)
+    # Might have to remove this since a student doesn't see this page
     if current_user.user_type not in ['admin', 'coordinator']:
         flash('You are not authorized to access this page.', category='error')
         return redirect(url_for('auth.login'))
@@ -126,7 +128,6 @@ def clubs():
     return render_template("clubs.html", clubs=approved_clubs, user=current_user)
 
 
-
 @auth.route('/create_club', methods=['POST'])
 def create_club():
     if request.method == 'POST':
@@ -142,11 +143,13 @@ def create_club():
             flash('A club with the same name already exists.', 'error')
             return redirect(url_for('auth.clubs'))
 
-        new_club = Clubs(club_name=club_name, club_description=club_description, coordinator_id=coordinator_id)
+        approval_timestamp = datetime.now()
+
+        new_club = Clubs(club_name=club_name, club_description=club_description, coordinator_id=coordinator_id )
         db.session.add(new_club)
         db.session.commit()
         flash('Club created successfully. It is now pending approval.', 'success')
-        new_Member = Members(club_id=new_club.club_id , user_id=current_user.id, user_approval=True)
+        new_Member = Members(club_id=new_club.club_id , user_id=current_user.id, user_approval=True, approval_date_time=approval_timestamp)
         db.session.add(new_Member)
         db.session.commit()
         return redirect(url_for('auth.clubs'))
