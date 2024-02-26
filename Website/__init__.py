@@ -25,7 +25,7 @@ def create_app():
     app.register_blueprint(views,url_prefix='/')
     app.register_blueprint(auth,url_prefix='/')
 
-    from .models import User, Note
+    from .models import User
     create_database(app)
 
     login_manager = LoginManager()
@@ -44,7 +44,7 @@ def create_database(app):
     with app.app_context():
         if not path.exists('Website/' + DB_NAME):
             # next line allows you to delete database and start fresh
-            #db.drop_all()
+            db.drop_all()
 
 
             db.create_all()
