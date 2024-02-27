@@ -400,3 +400,7 @@ def approve_member(member_id, club_id):
 
     # Redirect to the members approval page
     return redirect(url_for('auth.members_approval'))
+
+@auth.route('/edit_profile')
+def edit_profile():
+    return render_template('edit_profile.html', user=current_user)
