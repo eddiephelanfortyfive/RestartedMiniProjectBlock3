@@ -14,8 +14,13 @@ from datetime import datetime
 @auth.route('/homepage')
 @login_required
 def homepage():
-    current_clubs = Members.query.filter_by(user_id=current_user.id, user_approval=True).all()
+    current_clubs_ids = [club.club_id for club in Members.query.filter_by(user_id=current_user.id, user_approval=True).all()]
+    current_clubs = []
+    for club_id in current_clubs_ids:
+        current_clubs.extend(Clubs.query.filter_by(club_id=club_id).all())
     return render_template("homepage.html", user=current_user, clubs=current_clubs)
+
+
 
 
 

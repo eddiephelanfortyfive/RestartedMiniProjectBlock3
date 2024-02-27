@@ -6,12 +6,12 @@ from .models import Members
 from .utils import db
 
 views = Blueprint('views', __name__)
-
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    current_clubs = Members.query.filter_by(user_id=current_user.id, user_approval=True).all()
+    current_clubs = Members.query.filter_by(user_id=current_user.id, user_approval=True).filter(Members.approval_date_time.isnot(None)).all()
     return render_template("home.html", user=current_user, clubs=current_clubs)
+
 
 
 
