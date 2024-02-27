@@ -9,7 +9,6 @@ from .models import Event_registration
 from werkzeug.security import generate_password_hash, check_password_hash
 auth = Blueprint('auth', __name__)
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime
 
 @auth.route('/homepage')
 @login_required
@@ -20,23 +19,17 @@ def homepage():
         current_clubs.extend(Clubs.query.filter_by(club_id=club_id).all())
     return render_template("homepage.html", user=current_user, clubs=current_clubs)
 
-
-
-
-
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        # next line filters users by specific email and returns the first result
         user = User.query.filter_by(email=email).first()
         if user:
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
-                return render_template("home.html", user=current_user)
+                return render_template("profile.html", user=current_user)
             else:
                 flash('Incorrect password, try again.', category='error')
         else:
@@ -90,27 +83,18 @@ def sign_up():
             db.session.add(new_user)
             db.session.commit()
 
-            # logs in user after they create their account , might want to change to pending
-            # login_user(user, remember=True)
-            flash('Account created', category='success')
-            return redirect(url_for('views.home'))
+            flash('Account created, now you can login!', category='success')
+            return redirect(url_for('auth.login'))
 
-            #add to database
     return render_template("sign_up.html", user=current_user)
 
 @auth.route('/user-approval')
 @login_required
 def user_approval():
-    # Ensure the current user is authorized to access this route (admin or coordinator)
-    # Might have to remove this since a student doesn't see this page
     if current_user.user_type not in ['admin', 'coordinator']:
         flash('You are not authorized to access this page.', category='error')
         return redirect(url_for('auth.login'))
-
-    # Query the database to fetch pending users
     pending_users = User.query.filter_by(user_type='pending').all()
-
-    # Render the user_approval.html template, passing the pending_users variable to it
     return render_template("user_approval.html", user=current_user, pending_users=pending_users)
 
 
@@ -118,7 +102,7 @@ def user_approval():
 @login_required
 def approve_user(user_id):
     user = User.query.get(user_id)
-    action = request.form.get('action')  # Retrieve action from form data
+    action = request.form.get('action')
 
     if action == 'approve':
         user.user_type = 'student'
@@ -141,20 +125,18 @@ def approve_user(user_id):
 
 @auth.route('/clubs')
 def clubs():
-    # Retrieve the IDs of approved clubs for the current user
     approved_club_ids = [member.club_id for member in
                          Members.query.filter_by(user_id=current_user.id, user_approval=True).all()]
 
-    # Retrieve the approved clubs using the IDs
-    approved_clubs = Clubs.query.filter(Clubs.club_id.in_(approved_club_ids)).all()
+    remaining_clubs = Clubs.query.filter(~Clubs.club_id.in_(approved_club_ids)).all()
 
-    return render_template("clubs.html", clubs=approved_clubs, user=current_user, Members=Members)
+
+    return render_template("clubs.html", clubs=remaining_clubs, user=current_user, Members=Members)
 
 
 @auth.route('/create_club', methods=['POST'])
 def create_club():
     if request.method == 'POST':
-        # Get form data
         club_name = request.form['name']
         club_description = request.form['description']
         coordinator_id = current_user.id
@@ -184,15 +166,12 @@ from flask_login import current_user
 @auth.route('/club-approval')
 @login_required
 def club_approval():
-    # Ensure the current user is authorized to access this page (admin or coordinator)
     if current_user.user_type not in ['admin', 'coordinator']:
         flash('You are not authorized to access this page.', category='error')
         return redirect(url_for('auth.login'))
 
-    # Query the database to fetch pending clubs
     pending_clubs = Clubs.query.filter_by(club_approval=None).all()
 
-    # Render the club_approval.html template, passing the pending_clubs and current_user variables to it
     return render_template("club_approval.html", pending_clubs=pending_clubs, user=current_user)
 
 
@@ -200,7 +179,7 @@ def club_approval():
 @login_required
 def approve_club(club_id):
     club = Clubs.query.get(club_id)
-    action = request.form.get('action')  # Retrieve action from form data
+    action = request.form.get('action')
 
     if action == 'approve':
         club.club_approval = True
@@ -213,10 +192,8 @@ def approve_club(club_id):
 
     db.session.commit()
 
-    # Query pending clubs again after the approval or denial
     pending_clubs = Clubs.query.filter_by(club_approval=None).all()
 
-    # Render the club_approval.html template, passing the pending_clubs and current_user variables to it
     return render_template("club_approval.html", pending_clubs=pending_clubs, user=current_user)
 
 
@@ -235,7 +212,6 @@ def register_event(event_id):
     event = Events.query.get_or_404(event_id)
     user_club = Members.query.filter_by(user_id=current_user.id).first().club_id
 
-    # Automatically approve registration requests from members of the same club
     if event.club_id == user_club:
         flash('Registration approved automatically.', 'success')
     else:
@@ -246,7 +222,7 @@ def register_event(event_id):
 @login_required
 def apply_event_students(user_id):
     student_registration = Event_registration.query.get(user_id)
-    action = request.form.get('action')  # Retrieve action from form data
+    action = request.form.get('action')
 
     if action == 'approve':
         student_registration.user_event_approval = True
@@ -265,16 +241,12 @@ def apply_event_students(user_id):
 @auth.route('/event-approval')
 @login_required
 def event_approval():
-    # Ensure the current user is authorized to access this route (admin or coordinator)
-    # Might have to remove this since a student doesn't see this page
     if current_user.user_type not in ['admin', 'coordinator']:
         flash('You are not authorized to access this page.', category='error')
         return redirect(url_for('auth.login'))
 
-    # Query the database to fetch pending users
     pending_event_students = Event_registration.query.filter_by(user_event_approval=None).all()
 
-    # Render the user_approval.html template, passing the pending_users variable to it
     return render_template("event_approval.html",  pending_event_students = pending_event_students, user=current_user,)
 
 
@@ -282,7 +254,6 @@ def event_approval():
 @auth.route('/approve_registration/<int:event_id>/<int:user_id>', methods=['POST'])
 @login_required
 def approve_registration(event_id, user_id):
-    # Check if the current user is a coordinator
     if current_user.user_type != 'coordinator':
         flash('You are not authorized to approve registrations.', 'error')
         return redirect(url_for('auth.events'))
@@ -302,13 +273,12 @@ def create_event():
         description = request.form['description']
         venue = request.form['venue']
         datetime_str = request.form['datetime']
-        club_id = request.form['club']  # Extract club ID from form data
+        club_id = request.form['club']
 
-        # Convert the datetime string to a Python datetime object
         event_datetime = datetime.fromisoformat(datetime_str)
 
         new_event = Events(event_title=title, event_description=description, event_venue=venue,
-                           event_date_time=event_datetime, club_id=club_id)  # Include club ID in the new event
+                           event_date_time=event_datetime, club_id=club_id)
         db.session.add(new_event)
         db.session.commit()
 
@@ -334,7 +304,6 @@ def delete_event(event_id):
 @auth.route('/apply-membership/<int:club_id>', methods=['POST'])
 @login_required
 def apply_membership(club_id):
-    # Check if the user is already a member of the club
     existing_membership = Members.query.filter_by(club_id=club_id, user_id=current_user.id).first()
     if existing_membership:
         flash('You have already applied to this club.', 'error')
@@ -345,7 +314,6 @@ def apply_membership(club_id):
         flash('You can only be a member of maximum 3 clubs.', 'error')
         return redirect(url_for('auth.clubs'))
 
-    # Create a new membership record
     new_membership = Members(club_id=club_id, user_id=current_user.id,approval_date_time = datetime.now())
     db.session.add(new_membership)
     db.session.commit()
@@ -358,15 +326,14 @@ def apply_membership(club_id):
 @login_required
 def members_approval():
     if current_user.user_type != 'coordinator':
-        abort(403)  # Only coordinators can access this page
+        abort(403)
 
     club = Clubs.query.filter_by(coordinator_id=current_user.id).first()
     if not club:
-        return render_template('no_applications.html')  # No club applications
+        return render_template('no_applications.html')
 
     coordinator_club = Members.query.filter_by(user_id=current_user.id, user_approval=True).first()
     if coordinator_club is None:
-        # Handle the case where coordinator_club is None, for example, by returning an empty list
         club_applications = []
     else:
         club_applications = Members.query.filter_by(club_id=coordinator_club.club_id, user_approval=None).all()
@@ -378,12 +345,10 @@ def members_approval():
 @auth.route('/approve-club/<int:member_id>/<int:club_id>', methods=['POST'])
 @login_required
 def approve_member(member_id, club_id):
-    # Retrieve the member from the database
     member = Members.query.filter_by(user_id=member_id, club_id=club_id).first()
 
-    # Check if the member exists
     if member is not None:
-        action = request.form.get('action')  # Retrieve action from form data
+        action = request.form.get('action')
 
         if action == 'approve':
             member.user_approval = True
@@ -398,5 +363,4 @@ def approve_member(member_id, club_id):
     else:
         flash('Member not found!', category='error')
 
-    # Redirect to the members approval page
     return redirect(url_for('auth.members_approval'))

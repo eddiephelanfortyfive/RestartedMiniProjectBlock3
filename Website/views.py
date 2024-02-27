@@ -10,7 +10,7 @@ views = Blueprint('views', __name__)
 @login_required
 def home():
     current_clubs = Members.query.filter_by(user_id=current_user.id, user_approval=True).filter(Members.approval_date_time.isnot(None)).all()
-    return render_template("home.html", user=current_user, clubs=current_clubs)
+    return render_template("homepage.html", user=current_user, clubs=current_clubs)
 
 
 

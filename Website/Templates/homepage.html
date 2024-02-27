@@ -8,43 +8,82 @@
 <style>
     body {
         background-color: #f8f9fa;
-        background-image: url('https://images.pexels.com/photos/47343/the-ball-stadion-horn-corner-47343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); /* Change the URL to your image */
+        background-image: url('https://images.pexels.com/photos/47343/the-ball-stadion-horn-corner-47343.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
         background-size: cover;
         background-position: center;
         min-height: 100vh;
     }
+
     .welcome-section {
         display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        text-align: center;
-        padding: 20vh 10%;
+        flex-direction: column; /* Adjusted */
+        align-items: flex-start; /* Adjusted */
+        padding: 20vh 5%; /* Adjusted padding */
     }
+
     .container {
         max-width: 600px;
         margin: 0 auto;
     }
+
     .welcome-message {
         font-size: 72px;
         font-weight: bold;
         color: beige;
         font-family: 'Bebas Neue', sans-serif;
         margin-bottom: 20px;
+        text-align: left;
     }
+
     .explore-message {
         font-size: 24px;
         color: beige;
         font-family: 'Bebas Neue', sans-serif;
         margin-bottom: 40px;
+        text-align: left;
     }
+
     .club-list {
         background-color: rgba(255, 255, 255, 0.8);
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 80%; /* Adjusted width */
     }
+
     .club-item {
         margin-bottom: 20px;
+        width: 100%; /* Adjusted width */
+    }
+
+    .card {
+        border: none;
+        background-color: transparent;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .card-text {
+        font-size: 16px;
+    }
+
+    .no-clubs-message {
+        margin-top: 20px; /* Adjusted */
+        text-align: center;
+        padding: 20px;
+        background-color: #d7dff8;
+        border: 1px solid #cfc6f5;
+        border-radius: 5px;
+        color: #331c72;
     }
 </style>
 
@@ -53,21 +92,28 @@
         <h1 class="welcome-message">Welcome to Clubhub!</h1>
         <p class="explore-message">Explore our clubs and discover your next passion!</p>
     </div>
-    <div class="club-list">
-        <h4>Clubs You've Been Accepted To</h4>
-        <ul class="club-items">
-            {% for club in clubs %}
-                <li class="club-item">
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="card-title">{{ club.club_name }}</h2>
-                            <p class="card-text">{{ club.club_description }}</p>
+    {% if clubs %}
+        <div class="club-list">
+            <h4>Your Clubs:</h4>
+            <ul class="club-items">
+                {% for club in clubs %}
+                    <li class="club-item">
+                        <div class="card">
+                            <div class="card-body">
+                                <h2 class="card-title">{{ club.club_name }}</h2>
+                                <p class="card-text">Description: {{ club.club_description }}</p>
+                                <p class="card-text">Coordinator ID: {{ club.coordinator_id }}</p>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div class="no-clubs-message">
+            <strong>When you get accepted to a club it will be displayed here!</strong>
+        </div>
+    {% endif %}
 </div>
 
 {% endblock %}
