@@ -119,7 +119,7 @@ def approve_user(user_id):
         flash('User approved successfully!', category='success')
     elif action == 'approve_coordinator':
         user.user_type = 'coordinator'
-        user.is_coordinator = True
+        # user.is_coordinator = True
         flash('User approved as Coordinator successfully', category='success')
     elif action == 'deny':
         db.session.delete(user)
