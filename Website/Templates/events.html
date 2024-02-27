@@ -4,6 +4,19 @@
 {% block content %}
 
      <style>
+         body {
+    background-image: url('https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Keeps the background fixed while scrolling */
+}
+
+.container {
+    max-width: 1200px; /* Adjust this value as needed */
+    margin: 0 auto;
+    padding: 20px;
+}
     .no-events-message {
         margin-top: 50px;
         text-align: center;
@@ -18,7 +31,7 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-md-8">
-      <h1>Events</h1>
+      <h1 style="color: white;">Events</h1>
         {% if events is none or events|length == 0 %}
             <div class="no-events-message">
                         <strong>No events have been created yet!</strong>
@@ -28,32 +41,51 @@
       <!-- Display existing events -->
 
           {% for event in events %}
-          <div class="card mb-3">
-            <div class="card-body">
-              <h2 class="card-title">{{ event.event_title }}</h2>
-              <p class="card-text">{{ event.event_description }}</p>
-              <p class="card-text">Venue: {{ event.event_venue }}</p>
-              <!-- Format the date and time to remove seconds -->
-              <p class="card-text">Date & Time: {{ event.event_date_time.strftime('%Y-%m-%d %H:%M') }}</p>
-              {% set club = user_coordinated_clubs | selectattr('club_id', 'equalto', event.club_id) | first %}
-              <!-- Fetch the club information based on event.club_id -->
-              {% if club %}
-              <p class="card-text">Club: {{ club.club_name }}</p>
-              {% endif %}
-            </div>
-            {% set is_coordinator = current_user.is_authenticated and club and (current_user.id == club.coordinator_id) %}
-            {% if is_coordinator or current_user.is_admin_coordinator %}
-            <div class="card-footer text-end">
-              <form method="POST" action="/delete_event/{{ event.event_id }}">
-                <button type="submit" class="btn btn-danger">Delete Event</button>
-              </form>
-            </div>
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="card-title">{{ event.event_title }}</h2>
+            <p class="card-text">{{ event.event_description }}</p>
+            <p class="card-text">Venue: {{ event.event_venue }}</p>
+            <!-- Format the date and time to remove seconds -->
+            <p class="card-text">Date & Time: {{ event.event_date_time.strftime('%Y-%m-%d %H:%M') }}</p>
+            {% set club = user_coordinated_clubs | selectattr('club_id', 'equalto', event.club_id) | first %}
+            <!-- Fetch the club information based on event.club_id -->
+            {% if club %}
+                <p class="card-text">Club: {{ club.club_name }}</p>
             {% endif %}
-          </div>
-          {% endfor %}
+        </div>
+        {% set is_coordinator = current_user.is_authenticated and club and (current_user.id == club.coordinator_id) %}
+        {% if is_coordinator or current_user.is_admin_coordinator %}
+            <div class="card-footer text-end">
+                <form method="POST" action="/delete_event/{{ event.event_id }}">
+                    <button type="submit" class="btn btn-danger">Delete Event</button>
+                </form>
+            </div>
+        {% else %}
+            {% set applied = Event_registration.query.filter_by(event_id=event.event_id, user_id=current_user.id, user_event_approval=True).first() %}
+            {% set applied_none = Event_registration.query.filter_by(event_id=event.event_id, user_id=current_user.id, user_event_approval=None).first() %}
+
+            {% if applied is none %}
+                {% set applied = applied_none %}
+            {% endif %}
+            {% if applied %}
+                <div class="card-footer text-end">
+                    <button type="button" class="btn btn-success" disabled>Applied</button>
+                </div>
+                {% else %}
+                    <div class="card-footer text-end">
+                    <form method="POST" action="{{ url_for('auth.register_event', event_id=event.event_id) }}">
+                        <button type="submit" class="btn btn-success">Apply</button>
+                    </form>
+                </div>
+            {% endif %}
         {% endif %}
     </div>
-        {% if current_user.is_coordinator==True %}
+{% endfor %}
+
+ {% endif %}
+</div>
+{% if current_user.is_coordinator==True %}
     <div class="col-md-4">
       <!-- Form to create a new event -->
       <div class="card">

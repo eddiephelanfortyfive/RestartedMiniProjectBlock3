@@ -201,42 +201,55 @@ def approve_club(club_id):
 def events():
     user_coordinated_clubs = Clubs.query.filter_by(coordinator_id=current_user.id).all()
     events = Events.query.all()
-    return render_template("events.html", events=events, user_coordinated_clubs=user_coordinated_clubs,
-                           user=current_user)
 
+    return render_template("events.html", events=events, user_coordinated_clubs=user_coordinated_clubs,
+                           user=current_user, Event_registration=Event_registration)
 
 
 @auth.route('/register_event/<int:event_id>', methods=['POST'])
 @login_required
 def register_event(event_id):
     event = Events.query.get_or_404(event_id)
-    user_club = Members.query.filter_by(user_id=current_user.id).first().club_id
+    user_club = Members.query.filter_by(user_id=current_user.id, club_id=event.club_id).first()
+    event_registration = Event_registration.query.filter_by(event_id=event_id).first()
 
-    if event.club_id == user_club:
+    if user_club is not None:
         flash('Registration approved automatically.', 'success')
+        event_registration.user_event_approval = True
+        student = Event_registration(event_id=event.event_id, user_id=current_user.id, user_event_approval=True)
+        db.session.add(student)
     else:
         flash('Registration request sent. Waiting for coordinator approval.', 'info')
+        pending_student = Event_registration(event_id = event.event_id, user_id = current_user.id, user_event_approval = None)
+        db.session.add(pending_student)
+        db.session.commit()
     return redirect(url_for('auth.events'))
 
 @auth.route('/approve-event-students/<int:user_id>', methods=['POST'])
 @login_required
-def apply_event_students(user_id):
-    student_registration = Event_registration.query.get(user_id)
-    action = request.form.get('action')
+def approve_event_students(user_id):
+    event_registration = Event_registration.query.filter_by(user_id=user_id).first()
 
-    if action == 'approve':
-        student_registration.user_event_approval = True
-        flash('Student accepted to event successfully!', category='success')
-    elif action == 'deny':
-        student_registration.user_event_approval = False
-        flash('Student denied to event successfully', category='success')
+    if event_registration:
+        action = request.form.get('action')
+
+        if action == 'approve':
+            event_registration.user_event_approval = True
+            flash('Student accepted to event successfully!', category='success')
+        elif action == 'deny':
+            event_registration.user_event_approval = False
+            flash('Student denied to event successfully', category='success')
+        else:
+            flash('Invalid action!', category='error')
+
+        db.session.commit()
     else:
-        flash('Invalid action!', category='error')
+        flash('Event registration not found', category='error')
 
-    db.session.commit()
+
     pending_event_students = Event_registration.query.filter_by(user_event_approval=None).all()
 
-    return render_template("event_approval.html", pending_event_students=pending_event_students, user=current_user,)
+    return render_template("event_approval.html",User=User, pending_event_students=pending_event_students, user=current_user)
 
 @auth.route('/event-approval')
 @login_required
@@ -247,7 +260,7 @@ def event_approval():
 
     pending_event_students = Event_registration.query.filter_by(user_event_approval=None).all()
 
-    return render_template("event_approval.html",  pending_event_students = pending_event_students, user=current_user,)
+    return render_template("event_approval.html",User=User,  pending_event_students = pending_event_students, user=current_user,)
 
 
 
@@ -364,3 +377,19 @@ def approve_member(member_id, club_id):
         flash('Member not found!', category='error')
 
     return redirect(url_for('auth.members_approval'))
+
+@auth.route('/members_list')
+@login_required
+def members_list():
+    # Assuming current_user is an instance of User model
+    club_id = Clubs.query.filter_by(coordinator_id=current_user.id).first().club_id
+    all_members = Members.query.filter_by(club_id=club_id).all()
+    return render_template('members_list.html', all_members=all_members, user=current_user,User=User)
+
+@auth.route('/users_list')
+@login_required
+def Users_list():
+    users = User.query.filter_by().all()
+    return render_template('users_list.html',users=users,User=User, user=current_user)
+
+

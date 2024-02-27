@@ -27,11 +27,14 @@
                 <a class="nav-item nav-link" id="profile" href="/profile">Profile</a>
                     {% if current_user.is_coordinator==True %}
                         <a class="nav-item nav-link" id="members_approval" href="/members_approval">Members Approval</a>
+                        <a class="nav-item nav-link" id="event-approval" href="/event-approval">Event Approval</a>
+                        <a class="nav-item nav-link" id="members_list" href="/members_list">Members List</a>
+
                         {% endif %}
                     {% if user.user_type == 'admin' %}
                         <a class="nav-item nav-link" id="user-approval" href="/user-approval">User Approval</a>
                         <a class="nav-item nav-link" id="club-approval" href="/club-approval">Club Approval</a>
-                        <a class="nav-item nav-link" id="event-approval" href="/event-approval">Event Approval</a>
+                        <a class="nav-item nav-link" id="users-list" href="/users_list">Users List</a>
 
                     {% endif %}
                     <a class="nav-item nav-link" id="logout" href="/logout">Logout</a>

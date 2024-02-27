@@ -1,40 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}User Approval{% endblock %}
+{% block title %}Student Event Approval{% endblock %}
 
 {% block content %}
+<div class="container mt-5">
+  <h1>Student Approval</h1>
 
-<style>
-    .no-users-message {
-        margin-top: 50px;
-        text-align: center;
-        padding: 20px;
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        border-radius: 5px;
-        color: #721c24;
-    }
-</style>
+{%  if pending_event_students %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Student Name</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
 
-<h1>Welcome Coordinator</h1>
-
-{% if pending_event_students is none or pending_event_students|length == 0 %}
-    <div class="no-users-message">
-        <strong>No students pending event approval!</strong>
-    </div>
-{% else %}
-    <h2>Pending students</h2>
-    <ul>
         {% for pending_event_student in pending_event_students %}
-            <li>
-                {{ pending_event_student.username }} - {{ pending_event_student.email }}
-                <form method="POST" action="{{ url_for('auth.approve-event-students', user_id=pending_event_student.user_id) }}">
-                    <button type="submit" name="action" value="approve" class="btn btn-success">Approve student</button>
-                    <button type="submit" name="action" value="deny" class="btn btn-danger">Deny student</button>
-                </form>
-            </li>
+            {% set user = User.query.filter_by(id = pending_event_student.user_id).first() %}
+                <tr>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td>{{ user.email}}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('auth.approve_event_students', user_id=pending_event_student.user_id) }}" class="d-inline">
+                     <input type="hidden" name="action" value="approve">
+                     <button type="submit" class="btn-success">Approve Student</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('auth.approve_event_students', user_id=pending_event_student.user_id) }}" class="d-inline">
+                        <input type="hidden" name="action" value="deny">
+                        <button type="submit" class="btn-danger">Deny Student</button>
+                    </form>
+                </td>
+            </tr>
         {% endfor %}
-    </ul>
+      </tbody>
+    </table>
+    {% else %}
+    <div class ="alert alert-danger" role="alert">No event applications.</div>
 {% endif %}
+</div>
 
 {% endblock %}
