@@ -39,7 +39,6 @@
     {% endfor %}
 </div>
 {% if current_user.user_type == 'coordinator' %}
-    {% if current_user.is_coordinator %}
         {% if user.is_coordinator==False %}
             <div class="col-md-4">
                 <!-- Form to create a new club -->
@@ -61,7 +60,5 @@
                 </div>
             </div>
         {% endif %}
-    {% endif %}
 {% endif %}
-</div>
 {% endblock %}
