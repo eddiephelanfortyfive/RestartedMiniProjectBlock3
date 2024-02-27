@@ -2,7 +2,7 @@
 import json
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for
 from flask_login import login_required, current_user
-
+from .models import Members
 from .utils import db
 
 views = Blueprint('views', __name__)
@@ -10,7 +10,8 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    return render_template("home.html", user=current_user)
+    current_clubs = Members.query.filter_by(user_id=current_user.id, user_approval=True).all()
+    return render_template("home.html", user=current_user, clubs=current_clubs)
 
 
 

@@ -18,48 +18,48 @@
     <h1>Clubs</h1>
     <!-- Display existing clubs -->
     {% for club in clubs %}
-        <div class="card mb-3">
-            <div class="card-body">
-                <h2 class="card-title">{{ club.club_name }}</h2>
-                <p class="card-text">{{ club.club_description }}</p>
-                {% if current_user.user_type == 'student' %}
-                    {% set applied = Members.query.filter_by(user_id=current_user.id, club_id=club.club_id).first() %}
-                    {% if applied %}
-                        <p class="text-muted">Pending</p>
-                    {% elif current_user.clubs|length >= 3 %}
-                        <p class="text-danger">Maximum clubs reached</p>
-                    {% else %}
-                        <form action="{{ url_for('auth.apply_membership', club_id=club.club_id) }}" method="post">
-                            <button type="submit" class="btn btn-success">Apply</button>
-                        </form>
+        {% set applied = Members.query.filter_by(user_id=current_user.id, club_id=club.club_id).first() %}
+        {% if applied is none %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h2 class="card-title">{{ club.club_name }}</h2>
+                    <p class="card-text">{{ club.club_description }}</p>
+                    {% if current_user.user_type == 'student' %}
+                        {% if current_user.clubs|length >= 3 %}
+                            <p class="text-danger">Maximum clubs reached</p>
+                        {% else %}
+                            <form action="{{ url_for('auth.apply_membership', club_id=club.club_id) }}" method="post">
+                                <button type="submit" class="btn btn-success">Apply</button>
+                            </form>
+                        {% endif %}
                     {% endif %}
-                {% endif %}
+                </div>
             </div>
-        </div>
+        {% endif %}
     {% endfor %}
 </div>
 {% if current_user.user_type == 'coordinator' %}
     {% if current_user.is_coordinator %}
         {% if user.is_coordinator==False %}
-        <div class="col-md-4">
-            <!-- Form to create a new club -->
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="card-title">Create a New Club</h2>
-                    <form method="POST" action="/create_club">
-                        <div class="form-group">
-                            <label for="name">Name:</label>
-                            <input type="text" class="form-control" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="description">Description:</label>
-                            <textarea class="form-control" id="description" name="description" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Create Club</button>
-                    </form>
+            <div class="col-md-4">
+                <!-- Form to create a new club -->
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title">Create a New Club</h2>
+                        <form method="POST" action="/create_club">
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description:</label>
+                                <textarea class="form-control" id="description" name="description" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Create Club</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
         {% endif %}
     {% endif %}
 {% endif %}

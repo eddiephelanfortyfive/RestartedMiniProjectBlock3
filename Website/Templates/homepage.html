@@ -5,7 +5,6 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo&display=swap">
 
-
 <style>
     body {
         background-color: #f8f9fa;
@@ -15,12 +14,15 @@
         min-height: 100vh;
     }
     .welcome-section {
-        height: 100vh;
         display: flex;
-        justify-content: center;
-        align-items: center;
+        justify-content: space-between;
+        align-items: flex-end;
         text-align: center;
-        padding-bottom: 20vh;
+        padding: 20vh 10%;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
     }
     .welcome-message {
         font-size: 72px;
@@ -32,7 +34,6 @@
         font-size: 24px;
         color: beige;
         font-family: 'Bebas Neue', sans-serif;
-
     }
 </style>
 
@@ -40,6 +41,9 @@
     <div class="container">
         <h1 class="welcome-message">Welcome to Clubhub!</h1>
         <p class="explore-message">Explore our clubs and discover your next passion!</p>
+    </div>
+    <div class="clubs-section">
+        <!-- Display clubs here -->
     </div>
 </div>
 

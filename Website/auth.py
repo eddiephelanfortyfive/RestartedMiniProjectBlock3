@@ -14,7 +14,8 @@ from datetime import datetime
 @auth.route('/homepage')
 @login_required
 def homepage():
-    return render_template('homepage.html', user=current_user)
+    current_clubs = Members.query.filter_by(user_id=current_user.id, user_approval=True).all()
+    return render_template("homepage.html", user=current_user, clubs=current_clubs)
 
 
 
@@ -135,8 +136,14 @@ def approve_user(user_id):
 
 @auth.route('/clubs')
 def clubs():
-    approved_clubs = Clubs.query.filter_by(club_approval=True).all()
-    return render_template("clubs.html", clubs=approved_clubs, Members=Members, user=current_user)
+    # Retrieve the IDs of approved clubs for the current user
+    approved_club_ids = [member.club_id for member in
+                         Members.query.filter_by(user_id=current_user.id, user_approval=True).all()]
+
+    # Retrieve the approved clubs using the IDs
+    approved_clubs = Clubs.query.filter(Clubs.club_id.in_(approved_club_ids)).all()
+
+    return render_template("clubs.html", clubs=approved_clubs, user=current_user, Members=Members)
 
 
 @auth.route('/create_club', methods=['POST'])
@@ -334,7 +341,7 @@ def apply_membership(club_id):
         return redirect(url_for('auth.clubs'))
 
     # Create a new membership record
-    new_membership = Members(club_id=club_id, user_id=current_user.id)
+    new_membership = Members(club_id=club_id, user_id=current_user.id,approval_date_time = datetime.now())
     db.session.add(new_membership)
     db.session.commit()
 
