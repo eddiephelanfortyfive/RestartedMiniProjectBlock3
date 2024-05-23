@@ -218,6 +218,7 @@ def register_event(event_id):
         event_registration.user_event_approval = True
         student = Event_registration(event_id=event.event_id, user_id=current_user.id, user_event_approval=True)
         db.session.add(student)
+        db.session.commit()
     else:
         flash('Registration request sent. Waiting for coordinator approval.', 'info')
         pending_student = Event_registration(event_id = event.event_id, user_id = current_user.id, user_event_approval = None)
